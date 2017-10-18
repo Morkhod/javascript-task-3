@@ -59,13 +59,11 @@ function robberTimeInMinutes(time, bankTimeZone) {
 }
 
 function getGeneralSchedule(schedule, bankTimeZone) {
-    return Object.keys(schedule).reduce((acc, curr) => [...acc, ...schedule[curr]], [])
-        .map(current => {
-            return {
-                from: robberTimeInMinutes(current.from, bankTimeZone),
-                to: robberTimeInMinutes(current.to, bankTimeZone)
-            };
-        })
+    return Object.keys(schedule).reduce((acc, curr) => acc.concat(schedule[curr]), [])
+        .map(current => ({
+            from: robberTimeInMinutes(current.from, bankTimeZone),
+            to: robberTimeInMinutes(current.to, bankTimeZone)
+        }))
         .sort((a, b) => a.from - b.from);
 }
 
@@ -84,12 +82,10 @@ function getJoinedSchedule(generalSchedule) {
 
 function getFreeTimes(joinedSchedule) {
     return [{ from: FIRST_MINUTE, to: joinedSchedule[0].from }]
-        .concat(joinedSchedule.map((current, i) => {
-            return {
-                from: current.to,
-                to: (joinedSchedule[i + 1]) ? joinedSchedule[i + 1].from : LAST_MINUTE
-            };
-        }));
+        .concat(joinedSchedule.map((current, i) => ({
+            from: current.to,
+            to: (joinedSchedule[i + 1]) ? joinedSchedule[i + 1].from : LAST_MINUTE
+        })));
 }
 
 function getRobberyIntervals(bankSchedule, freeTimes, duration) {
